@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090604">
+<meta name="description" content="The Room — a small cinematic memory experience.">
+<title>The Room — V0.5</title>
+<link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div class="preload-screen" id="preload"><div><div>THE ROOM</div><small>remembering...</small><div class="preload-bar"><span id="preloadBar"></span></div></div></div>
+<main class="experience" id="experience">
+  <section class="scene active" data-scene="room" aria-label="The Room">
+    <img src="assets/room.jpg" alt="" class="scene-img">
+    <div class="scene-wash"></div>
+    <div class="grain"></div>
+    <div class="copy">
+      <span class="kicker">01 / THE ROOM</span>
+      <h1>A place from<br>another time.</h1>
+      <p>Look around. Nothing here is in a hurry.</p>
+      <button class="enter" data-next="balcony">look outside <span>↗</span></button>
+    </div>
+    <button class="hotspot hs-clock" data-memory="The clock was always five minutes fast. Nobody fixed it." aria-label="Look at the clock"></button>
+    <button class="hotspot hs-chair" data-memory="That chair knew every afternoon nap, every cricket score, every unfinished story." aria-label="Look at the chair"></button>
+    <button class="hotspot hs-window" data-memory="Before notifications, the window was how you knew the rain had started." aria-label="Look at the window"></button>
+    <div class="object-label label-room">CLICK AROUND · 3 THINGS HIDDEN</div>
+  </section>
+
+  <section class="scene" data-scene="balcony" aria-label="The Balcony">
+    <img src="assets/balcony.jpg" alt="" class="scene-img">
+    <div class="scene-wash balcony-wash"></div>
+    <div class="grain"></div>
+    <div class="copy">
+      <span class="kicker">02 / THE BALCONY</span>
+      <h1>Rain made<br>time slower.</h1>
+      <p>Some evenings were measured in drops, not minutes.</p>
+      <button class="enter" data-next="cricket">follow the sound <span>↗</span></button>
+    </div>
+    <button class="hotspot hs-rain" data-memory="Rain on concrete had its own soundtrack. You could hear the whole neighbourhood breathe." aria-label="Listen to the rain"></button>
+    <button class="hotspot hs-rail" data-memory="The railing was cold, the tea was hot, and the evening somehow felt endless." aria-label="Look at the railing"></button>
+    <button class="hotspot hs-sky" data-memory="Clouds turned ordinary balconies into front-row seats." aria-label="Look at the sky"></button>
+    <div class="weather">MONSOON · 7:42 PM</div>
+  </section>
+
+  <section class="scene" data-scene="cricket" aria-label="Gully Cricket">
+    <img src="assets/cricket.jpg" alt="" class="scene-img">
+    <div class="scene-wash cricket-wash"></div>
+    <div class="grain"></div>
+    <div class="copy">
+      <span class="kicker">03 / GULLY CRICKET</span>
+      <h1>One more over.<br>Then we'll go home.</h1>
+      <p>The bat was borrowed. The rules were negotiable. The match was serious.</p>
+      <button class="enter" data-next="room">back to the room <span>↙</span></button>
+    </div>
+    <button class="hotspot hs-bat" data-memory="The best bats were never really yours. They belonged to whoever brought them." aria-label="Look at the bat"></button>
+    <button class="hotspot hs-ball" data-memory="One ball could change the whole match. That was enough reason to keep playing." aria-label="Look at the ball"></button>
+    <button class="hotspot hs-stumps" data-memory="Three sticks, one argument, and suddenly everyone became an umpire." aria-label="Look at the stumps"></button>
+    <div class="score">OVR 08 · 64/4</div>
+  </section>
+
+  <section class="scene finale" data-scene="finale" aria-label="The Last Light">
+    <img src="assets/cricket.jpg" alt="" class="scene-img">
+    <div class="scene-wash finale-wash"></div>
+    <div class="grain"></div>
+    <div class="finale-copy">
+      <span class="kicker">09 / THE LAST LIGHT</span>
+      <h1>Nothing was<br>really lost.</h1>
+      <p>Some things only wait for you to notice them again.</p>
+      <button class="enter" data-next="room">start again <span>↺</span></button>
+    </div>
+    <div class="finale-count">09 / 09 REMEMBERED</div>
+  </section>
+
+  <nav class="dots" aria-label="Scenes">
+    <button class="dot active" data-go="room" aria-label="The Room"></button>
+    <button class="dot" data-go="balcony" aria-label="The Balcony"></button>
+    <button class="dot" data-go="cricket" aria-label="Gully Cricket"></button>
+    <button class="dot finale-dot" data-go="finale" aria-label="The Last Light"></button>
+  </nav>
+
+  <div class="discovery" id="discovery">0 / 9 REMEMBERED</div><div class="brand">THE ROOM <span>V0.5</span></div>
+  <div class="progress" aria-live="polite"><span id="found">0</span> / 9 FOUND</div>
+  <button class="sound" id="sound" aria-label="Toggle ambience">SOUND · OFF</button>
+
+  <div class="memory" id="memory" aria-hidden="true">
+    <div class="memory-card" role="dialog" aria-modal="true" aria-labelledby="memory-title">
+      <span class="memory-kicker">YOU FOUND A MEMORY</span>
+      <h2 id="memory-title">A small thing.</h2>
+      <p id="memory-text"></p>
+      <button id="close-memory" class="memory-close">keep looking <span>↗</span></button>
+    </div>
+  </div>
+</main>
+<noscript><div style="position:fixed;inset:0;background:#080604;color:#f4e4bf;display:grid;place-items:center;padding:30px;text-align:center">This experience needs JavaScript enabled.</div></noscript><script src="app.js"></script>
+</body>
+</html>
