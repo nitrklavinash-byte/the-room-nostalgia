@@ -3,95 +3,218 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#090604">
-<meta name="description" content="The Room — a small cinematic memory experience.">
-<title>The Room — V0.5</title>
-<link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#090a09">
+<title>The Room — Nostalgia</title>
+<style>
+:root{
+  --bg:#090a09;
+  --cream:#eadfbd;
+  --muted:#a99f82;
+  --gold:#c7a85a;
+  --line:rgba(234,223,189,.24);
+  --panel:rgba(9,10,9,.55);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--cream)}
+body{
+  font-family: Georgia, "Times New Roman", serif;
+  cursor:default;
+}
+body:before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:20;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,.035), transparent 42%),
+    radial-gradient(circle at 15% 80%, rgba(178,145,73,.035), transparent 35%);
+}
+body:after{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:21;opacity:.075;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+}
+#app{position:relative;width:100%;height:100%}
+.room{
+  position:absolute;inset:0;padding:28px 6vw 34px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  opacity:0;transform:translateY(18px) scale(.985);
+  transition:opacity .7s ease,transform .8s cubic-bezier(.22,.61,.36,1);
+  pointer-events:none;
+}
+.room.active{opacity:1;transform:none;pointer-events:auto}
+.top,.bottom{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand,.counter,.eyebrow,.time,.cta,.nav-label{
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+}
+.brand{color:var(--cream);opacity:.9}
+.version{color:var(--muted);margin-left:8px}
+.counter{color:var(--muted)}
+.sound{
+  appearance:none;background:transparent;color:var(--cream);
+  border:1px solid rgba(234,223,189,.38);border-radius:999px;
+  padding:9px 16px;font:inherit;letter-spacing:.14em;
+  cursor:pointer;transition:.25s;
+}
+.sound:hover{border-color:var(--gold);color:#fff}
+.content{
+  width:min(720px,82vw);
+  margin-top:auto;margin-bottom:auto;
+}
+.eyebrow{color:var(--gold);margin-bottom:20px}
+.title{
+  margin:0;
+  font-size:clamp(56px,8.2vw,112px);
+  line-height:.88;
+  font-weight:400;
+  letter-spacing:-.045em;
+  max-width:850px;
+  text-wrap:balance;
+}
+.copy{
+  max-width:430px;
+  margin:30px 0 36px;
+  color:#c9c0a7;
+  font-size:clamp(16px,1.55vw,21px);
+  line-height:1.5;
+}
+.cta{
+  display:inline-flex;align-items:center;gap:18px;
+  color:var(--cream);text-decoration:none;
+  border-bottom:1px solid rgba(234,223,189,.55);
+  padding-bottom:10px;
+  cursor:pointer;
+}
+.cta span:last-child{font-size:18px;letter-spacing:0;transition:transform .25s}
+.cta:hover span:last-child{transform:translateX(6px)}
+.meta{color:var(--muted);text-align:right}
+.dots{
+  position:fixed;left:50%;bottom:25px;transform:translateX(-50%);
+  z-index:30;display:flex;gap:12px;
+}
+.dot{
+  width:7px;height:7px;border:1px solid rgba(234,223,189,.6);
+  border-radius:50%;background:transparent;padding:0;cursor:pointer;
+  transition:.25s;
+}
+.dot.active{background:var(--cream);transform:scale(1.25)}
+.progress{
+  position:fixed;left:0;bottom:0;height:1px;background:var(--gold);
+  width:0;z-index:31;transition:width .6s ease;
+}
+.hint{
+  position:fixed;left:50%;bottom:25px;transform:translate(-50%,34px);
+  color:rgba(234,223,189,.35);font:10px/1.2 Arial,sans-serif;
+  letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;
+}
+@media (max-width:700px){
+  .room{padding:22px 24px 42px}
+  .content{width:100%}
+  .title{font-size:clamp(52px,17vw,88px)}
+  .copy{font-size:17px;margin-top:24px}
+  .meta{display:none}
+  .hint{display:none}
+}
+</style>
 </head>
 <body>
-<div class="preload-screen" id="preload"><div><div>THE ROOM</div><small>remembering...</small><div class="preload-bar"><span id="preloadBar"></span></div></div></div>
-<main class="experience" id="experience">
-  <section class="scene active" data-scene="room" aria-label="The Room">
-    <img src="assets/room.jpg" alt="" class="scene-img">
-    <div class="scene-wash"></div>
-    <div class="grain"></div>
-    <div class="copy">
-      <span class="kicker">01 / THE ROOM</span>
-      <h1>A place from<br>another time.</h1>
-      <p>Look around. Nothing here is in a hurry.</p>
-      <button class="enter" data-next="balcony">look outside <span>↗</span></button>
+<div id="app"></div>
+<div class="dots" id="dots" aria-label="Memory navigation"></div>
+<div class="progress" id="progress"></div>
+<div class="hint">← → to wander · click to enter</div>
+
+<script>
+const rooms = [
+  {no:"01", place:"THE HALLWAY", title:"Some places<br>stay with you.", copy:"You leave the house, but certain rooms keep following you.", meta:"A MEMORY · 6:14 PM"},
+  {no:"02", place:"THE BALCONY", title:"Rain made<br>time slower.", copy:"Some evenings were measured in drops, not minutes.", meta:"MONSOON · 7:42 PM"},
+  {no:"03", place:"THE LIVING ROOM", title:"The fan knew<br>every summer.", copy:"Slow blades. Warm air. A television murmuring somewhere in the background.", meta:"SUMMER · 4:18 PM"},
+  {no:"04", place:"THE TELEVISION", title:"Evening began<br>when it glowed.", copy:"Before streaming, before endless scrolling, there was one screen and everyone gathered around it.", meta:"FRIDAY · 8:03 PM"},
+  {no:"05", place:"THE KITCHEN", title:"Some recipes<br>were never written.", copy:"You learned them by watching hands move, by smell, by being there.", meta:"HOME · 1:06 PM"},
+  {no:"06", place:"THE SCHOOL BAG", title:"Tomorrow always<br>felt far away.", copy:"A heavy bag by the door. Homework unfinished. One more evening before Monday.", meta:"SUNDAY · 9:17 PM"},
+  {no:"07", place:"THE PHOTOGRAPH", title:"We didn't know<br>we were remembering.", copy:"Nobody said 'this will be a memory'. We simply smiled and looked at the camera.", meta:"ONE FRAME · UNDATED"},
+  {no:"08", place:"THE LAST LIGHT", title:"Every house had<br>a corner like this.", copy:"The light changed. The room became quiet. For a moment, nothing needed fixing.", meta:"DUSK · 6:51 PM"},
+  {no:"09", place:"THE ROOM", title:"Maybe nostalgia<br>is asking us to stay.", copy:"Not to go back. Just to remember how it felt when ordinary things were enough.", meta:"THE END · OR THE BEGINNING"}
+];
+
+const app = document.getElementById("app");
+const dots = document.getElementById("dots");
+const progress = document.getElementById("progress");
+let current = 0;
+let audioOn = true;
+let audioCtx, master, ambienceTimer;
+
+rooms.forEach((r,i)=>{
+  const section = document.createElement("section");
+  section.className = "room" + (i===0 ? " active":"");
+  section.innerHTML = `
+    <div class="top">
+      <div class="brand">THE ROOM <span class="version">V0.6</span></div>
+      <button class="sound" type="button">${audioOn ? "SOUND · ON" : "SOUND · OFF"}</button>
     </div>
-    <button class="hotspot hs-clock" data-memory="The clock was always five minutes fast. Nobody fixed it." aria-label="Look at the clock"></button>
-    <button class="hotspot hs-chair" data-memory="That chair knew every afternoon nap, every cricket score, every unfinished story." aria-label="Look at the chair"></button>
-    <button class="hotspot hs-window" data-memory="Before notifications, the window was how you knew the rain had started." aria-label="Look at the window"></button>
-    <div class="object-label label-room">CLICK AROUND · 3 THINGS HIDDEN</div>
-  </section>
-
-  <section class="scene" data-scene="balcony" aria-label="The Balcony">
-    <img src="assets/balcony.jpg" alt="" class="scene-img">
-    <div class="scene-wash balcony-wash"></div>
-    <div class="grain"></div>
-    <div class="copy">
-      <span class="kicker">02 / THE BALCONY</span>
-      <h1>Rain made<br>time slower.</h1>
-      <p>Some evenings were measured in drops, not minutes.</p>
-      <button class="enter" data-next="cricket">follow the sound <span>↗</span></button>
+    <div class="content">
+      <div class="eyebrow">${r.no} / ${r.place}</div>
+      <h1 class="title">${r.title}</h1>
+      <p class="copy">${r.copy}</p>
+      <a class="cta" href="#" data-next><span>${i===rooms.length-1 ? "START AGAIN" : "FOLLOW THE MEMORY"}</span><span>→</span></a>
     </div>
-    <button class="hotspot hs-rain" data-memory="Rain on concrete had its own soundtrack. You could hear the whole neighbourhood breathe." aria-label="Listen to the rain"></button>
-    <button class="hotspot hs-rail" data-memory="The railing was cold, the tea was hot, and the evening somehow felt endless." aria-label="Look at the railing"></button>
-    <button class="hotspot hs-sky" data-memory="Clouds turned ordinary balconies into front-row seats." aria-label="Look at the sky"></button>
-    <div class="weather">MONSOON · 7:42 PM</div>
-  </section>
+    <div class="bottom">
+      <div class="nav-label">${i===0 ? "BEGIN" : "MEMORY " + r.no}</div>
+      <div class="meta">${r.meta}</div>
+    </div>`;
+  app.appendChild(section);
 
-  <section class="scene" data-scene="cricket" aria-label="Gully Cricket">
-    <img src="assets/cricket.jpg" alt="" class="scene-img">
-    <div class="scene-wash cricket-wash"></div>
-    <div class="grain"></div>
-    <div class="copy">
-      <span class="kicker">03 / GULLY CRICKET</span>
-      <h1>One more over.<br>Then we'll go home.</h1>
-      <p>The bat was borrowed. The rules were negotiable. The match was serious.</p>
-      <button class="enter" data-next="room">back to the room <span>↙</span></button>
-    </div>
-    <button class="hotspot hs-bat" data-memory="The best bats were never really yours. They belonged to whoever brought them." aria-label="Look at the bat"></button>
-    <button class="hotspot hs-ball" data-memory="One ball could change the whole match. That was enough reason to keep playing." aria-label="Look at the ball"></button>
-    <button class="hotspot hs-stumps" data-memory="Three sticks, one argument, and suddenly everyone became an umpire." aria-label="Look at the stumps"></button>
-    <div class="score">OVR 08 · 64/4</div>
-  </section>
+  section.querySelector("[data-next]").addEventListener("click",e=>{
+    e.preventDefault();
+    goTo((current+1)%rooms.length);
+  });
+  section.querySelector(".sound").addEventListener("click",toggleSound);
 
-  <section class="scene finale" data-scene="finale" aria-label="The Last Light">
-    <img src="assets/cricket.jpg" alt="" class="scene-img">
-    <div class="scene-wash finale-wash"></div>
-    <div class="grain"></div>
-    <div class="finale-copy">
-      <span class="kicker">09 / THE LAST LIGHT</span>
-      <h1>Nothing was<br>really lost.</h1>
-      <p>Some things only wait for you to notice them again.</p>
-      <button class="enter" data-next="room">start again <span>↺</span></button>
-    </div>
-    <div class="finale-count">09 / 09 REMEMBERED</div>
-  </section>
+  const dot=document.createElement("button");
+  dot.className="dot"+(i===0?" active":"");
+  dot.setAttribute("aria-label","Go to memory "+r.no);
+  dot.addEventListener("click",()=>goTo(i));
+  dots.appendChild(dot);
+});
 
-  <nav class="dots" aria-label="Scenes">
-    <button class="dot active" data-go="room" aria-label="The Room"></button>
-    <button class="dot" data-go="balcony" aria-label="The Balcony"></button>
-    <button class="dot" data-go="cricket" aria-label="Gully Cricket"></button>
-    <button class="dot finale-dot" data-go="finale" aria-label="The Last Light"></button>
-  </nav>
+function goTo(n){
+  current=(n+rooms.length)%rooms.length;
+  document.querySelectorAll(".room").forEach((el,i)=>el.classList.toggle("active",i===current));
+  document.querySelectorAll(".dot").forEach((el,i)=>el.classList.toggle("active",i===current));
+  progress.style.width=((current+1)/rooms.length*100)+"%";
+  if(audioOn) tone();
+}
+function tone(){
+  try{
+    if(!audioCtx) initAudio();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type="sine"; o.frequency.value=220+current*14;
+    g.gain.setValueAtTime(0,audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(.018,audioCtx.currentTime+.05);
+    g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.55);
+    o.connect(g).connect(master); o.start(); o.stop(audioCtx.currentTime+.6);
+  }catch(e){}
+}
+function initAudio(){
+  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  master=audioCtx.createGain(); master.gain.value=.45; master.connect(audioCtx.destination);
+}
+function toggleSound(){
+  audioOn=!audioOn;
+  document.querySelectorAll(".sound").forEach(b=>b.textContent=audioOn?"SOUND · ON":"SOUND · OFF");
+  if(audioOn){ try{if(!audioCtx)initAudio(); tone();}catch(e){} }
+}
+window.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight"||e.key===" "){e.preventDefault();goTo(current+1)}
+  if(e.key==="ArrowLeft"){e.preventDefault();goTo(current-1)}
+});
+let touchX=null;
+window.addEventListener("touchstart",e=>touchX=e.changedTouches[0].clientX,{passive:true});
+window.addEventListener("touchend",e=>{
+  if(touchX===null)return;
+  const dx=e.changedTouches[0].clientX-touchX;
+  if(Math.abs(dx)>45) goTo(current+(dx<0?1:-1));
+  touchX=null;
+},{passive:true});
 
-  <div class="discovery" id="discovery">0 / 9 REMEMBERED</div><div class="brand">THE ROOM <span>V0.5</span></div>
-  <div class="progress" aria-live="polite"><span id="found">0</span> / 9 FOUND</div>
-  <button class="sound" id="sound" aria-label="Toggle ambience">SOUND · OFF</button>
-
-  <div class="memory" id="memory" aria-hidden="true">
-    <div class="memory-card" role="dialog" aria-modal="true" aria-labelledby="memory-title">
-      <span class="memory-kicker">YOU FOUND A MEMORY</span>
-      <h2 id="memory-title">A small thing.</h2>
-      <p id="memory-text"></p>
-      <button id="close-memory" class="memory-close">keep looking <span>↗</span></button>
-    </div>
-  </div>
-</main>
-<noscript><div style="position:fixed;inset:0;background:#080604;color:#f4e4bf;display:grid;place-items:center;padding:30px;text-align:center">This experience needs JavaScript enabled.</div></noscript><script src="app.js"></script>
+goTo(0);
+</script>
 </body>
 </html>
